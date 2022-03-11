@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickerdataappweb-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tickerdataappweb
+  template:
+    metadata:
+      labels:
+        app: tickerdataappweb
+    spec:
+      containers:
+      - name: tickerdataappweb
+        image: tickeracr.azurecr.io/companytickerdataappweb:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: acr-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickerdataappweb-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: tickerdataappweb
+  ports:
+  - port: 80
