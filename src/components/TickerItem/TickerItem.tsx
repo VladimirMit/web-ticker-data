@@ -12,6 +12,7 @@ interface HistoryItem {
 function TickerItem({ name, dateFrom, dateTo, id }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const options: Highcharts.Options = {
     title: {
@@ -20,7 +21,7 @@ function TickerItem({ name, dateFrom, dateTo, id }: Props) {
     series: [
       {
         type: "line",
-        data: historyItems?.map(hi => [hi.date.getTime(), hi.value]),
+        data: historyItems?.map((hi) => [hi.date.getTime(), hi.value]),
       },
     ],
   };
@@ -31,6 +32,7 @@ function TickerItem({ name, dateFrom, dateTo, id }: Props) {
     if (isOpen && !historyItems)
       fetch(`${process.env.REACT_APP_API_BASE_ADDRESS}/Tickers/${id}`).then(
         async (response) => {
+          setIsLoading(true);
           const history = (await response.json()) as {
             code: string;
             id: string;
@@ -45,6 +47,8 @@ function TickerItem({ name, dateFrom, dateTo, id }: Props) {
               };
             })
           );
+
+          setIsLoading(false);
         }
       );
   }, [isOpen, historyItems, id]);
@@ -61,10 +65,17 @@ function TickerItem({ name, dateFrom, dateTo, id }: Props) {
         </button>
       </div>
       <div>
-          {isOpen && (
-            <HighchartsReact highcharts={Highcharts}constructorType={'stockChart'} options={options} />
-          )}
-        </div>
+        {isOpen &&
+          (isLoading ? (
+            <div> Loading... </div>
+          ) : (
+            <HighchartsReact
+              highcharts={Highcharts}
+              constructorType={"stockChart"}
+              options={options}
+            />
+          ))}
+      </div>
     </div>
   );
 }
