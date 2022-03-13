@@ -1,7 +1,8 @@
 interface Props {
-    name: string,
-    dateFrom: Date,
-    dateTo: Date
+    id: string;
+    name: string;
+    dateFrom: Date;
+    dateTo: Date;
 }
 
 export default Props

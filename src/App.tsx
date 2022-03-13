@@ -94,6 +94,7 @@ function App() {
         ) : (
           tickers.map((ticker) => (
             <TickerItem
+              id={ticker.id}
               key={ticker.id}
               name={ticker.code}
               dateFrom={ticker.dateFrom}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../TickerItem/TickerItem.css";
+import "../TickerItem/TickerItem.scss";
 import Props from "./Props";
 
 function AddTickerItemForm({ createTicker }: Props) {
@@ -7,7 +7,7 @@ function AddTickerItemForm({ createTicker }: Props) {
 
   return (
     <form
-      className="ticker-item"
+      className="ticker-item__short-info"
       onSubmit={(e) => {
         e.preventDefault();
         if (isCreating) return;

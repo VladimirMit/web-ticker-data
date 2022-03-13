@@ -1,0 +1,15 @@
+.ticker-item {
+  border: 2px solid;
+  border-radius: 4px;
+  margin-top: 5px;
+
+  &__short-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  &__extended-info {
+    
+  }
+}
