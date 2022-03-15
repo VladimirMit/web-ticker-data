@@ -1,6 +1,7 @@
-# Docker
-# Build and push an image to Azure Container Registry
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
 pool:
   name: Default
 
@@ -11,24 +12,27 @@ resources:
 - repo: self
 
 variables:
+
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'b5a58766-d379-46f1-a27d-508f26ca6fbd'
-  imageRepository: 'companytickerdataappweb'
+  dockerRegistryServiceConnection: '091effe9-e457-4011-8f34-006fe6501df2'
+  imageRepository: 'vladimirmitwebtickerdata'
   containerRegistry: 'tickeracr.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
+  imagePullSecret: 'tickeracr352144b6-auth'
 
   # Agent VM image name
-  # vmImageName: 'ubuntu-latest'
+  #vmImageName: 'ubuntu-latest'
+
 
 stages:
 - stage: Build
-  displayName: Build and push stage
+  displayName: Build stage
   jobs:
   - job: Build
     displayName: Build
     #pool:
-    #  vmImage: $(vmImageName)
+      #vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -39,3 +43,39 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+    - upload: aks
+      artifact: aks
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'VladimirMitwebtickerdata.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/aks/tickerdataappweb.yaml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
