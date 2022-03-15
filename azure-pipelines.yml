@@ -54,8 +54,8 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    pool:
-      vmImage: $(vmImageName)
+    #pool:
+    #  vmImage: $(vmImageName)
     environment: 'VladimirMitwebtickerdata.default'
     strategy:
       runOnce:
