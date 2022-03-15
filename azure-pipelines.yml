@@ -3,6 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 pool:
   name: Default
+
 trigger:
 - master
 
@@ -18,7 +19,7 @@ variables:
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  # vmImageName: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -26,8 +27,8 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      vmImage: $(vmImageName)
+    #pool:
+    #  vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
