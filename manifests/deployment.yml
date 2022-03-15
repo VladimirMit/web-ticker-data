@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: vladimirmitwebtickerdata 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vladimirmitwebtickerdata
+  template:
+    metadata:
+      labels:
+        app: vladimirmitwebtickerdata 
+    spec:
+      containers:
+        - name: vladimirmitwebtickerdata 
+          image: tickeracr.azurecr.io/vladimirmitwebtickerdata
+          ports:
+          - containerPort: 80
